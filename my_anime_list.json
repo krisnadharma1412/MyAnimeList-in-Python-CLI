@@ -1,0 +1,35 @@
+[
+  {
+    "title": "Kono Subarashii Sekai ni Shukufuku wo!",
+    "score": 8.11,
+    "genres": [
+      "Adventure",
+      "Comedy",
+      "Fantasy"
+    ],
+    "status": "Finished Airing",
+    "image_url": "https://cdn.myanimelist.net/images/anime/8/77831.jpg"
+  },
+  {
+    "title": "Hunter x Hunter (2011)",
+    "score": 9.04,
+    "genres": [
+      "Action",
+      "Adventure",
+      "Fantasy"
+    ],
+    "status": "Finished Airing",
+    "image_url": "https://cdn.myanimelist.net/images/anime/1337/99013.jpg"
+  },
+  {
+    "title": "Naruto",
+    "score": 7.99,
+    "genres": [
+      "Action",
+      "Adventure",
+      "Fantasy"
+    ],
+    "status": "Finished Airing",
+    "image_url": "https://cdn.myanimelist.net/images/anime/13/17405.jpg"
+  }
+]

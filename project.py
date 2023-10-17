@@ -12,6 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 from rich import print
 from rich.panel import Panel
 from rich.table import Table
+from pyfiglet import Figlet
 
 def recommend_anime(genre, num_recommendations=3):
     response = requests.get(
@@ -91,17 +92,83 @@ def search_anime(title):
                     
                     print(f"Anime '{new_anime['title']}' saved to 'my_anime_list.json'")
             else:
-                print("back to main menu...")
-                # Add a delay of 2 seconds
-                time.sleep(2)
-                # Clear the terminal screen
-                os.system('cls' if os.name == 'nt' else 'clear')
-                main()
+                back_to_main_menu()
         except ValueError:
             print("Invalid input. Please enter a number.")
 
 def see_myanimelist():
-    ...
+    json_file_path = 'my_anime_list.json'
+
+    # Check if the file exist
+    if not os.path.exists(json_file_path):
+        print("No MyAnimeList found. Please add anime to your list first.")
+        back_to_main_menu()
+    # Load data from the JSON file
+    with open(json_file_path) as json_file:
+        data = json.load(json_file)
+    # Create a PrettyTable instance
+    table = PrettyTable()
+    # Define the table columns
+    table.field_names = ["No.","Title", "MyAnimeList Score", "Genres", "Status"]
+    
+    for i in range(len(data)):
+        table.add_row([i+1,data[i]['title'], data[i]['score'], data[i]['genres'], data[i]['status']])
+
+    # Figlet header
+    fig = Figlet()
+    header = fig.renderText("MyAnimeList")
+    print(header)
+    print(f"\n{table}\n\n")
+    print("What Do You Want To Do?")
+    print("1. Add Anime To Your List")
+    print("2. Delete Anime From Your List")
+    print("3. Back To Main Menu")
+
+    while True:
+        selected_option = input(f"\nEnter the number of your choice: ")
+        if selected_option == "1":
+            anime_title = input('Search Anime: ')
+            search_anime(anime_title)
+        elif selected_option == "2":
+            print(delete_anime(data))
+            time.sleep(3)
+            clear()
+            see_myanimelist()
+        elif selected_option == "3":
+            back_to_main_menu()
+        else:
+            print("Invalid choice. Please enter a valid number.")
+
+def back_to_main_menu():
+    print("back to main menu...")
+    # Add a delay of 2 seconds
+    time.sleep(2)
+    # Clear the terminal screen
+    clear()
+    time.sleep(1)
+    main()
+
+def delete_anime(data):
+    while True:
+        title = input('Anime: ').strip()
+        found = False
+        for i in range(len(data)):
+            if data[i]['title'] == title:
+                found = True
+                # ask for confirmation to confirm delete
+                confirm = input(f"Are you sure you want to delete '{title}' from 'my_anime_list.json'? (y/n) ")
+                if confirm.lower() == 'y':
+                    del data[i]
+                    with open('my_anime_list.json', 'w') as json_file:
+                        json.dump(data, json_file, indent=2)
+                    clear()
+                    return f"Anime '{title}' has been deleted from 'my_anime_list.json'"
+                elif confirm.lower() == 'n':
+                    return "No changes were made."
+        if not found:
+            print(f"No anime with the title '{title}' found in 'my_anime_list.json'. Please try again.")
+    
+    
 
 def load_or_create_json() -> None:
     if os.path.exists("animes.json"):
@@ -112,7 +179,6 @@ def load_or_create_json() -> None:
         with open("animes.json", "w") as file:
             ratings = {"anime_ratings": [], "tier_lists": []}
             json.dump(ratings, file)
-
 
 def create_tier_list_helper(animes_to_rank, tier_name):
     # if there are no more animes to rank, return an empty list
@@ -465,9 +531,19 @@ def see_tier_lists():
     print("✅ [b green]DONE[/b green]. Check the directory for the tier lists.")
     return
 
+def exit_app():
+    clear()
+    print(Figlet().renderText("See You Again!"))
+    time.sleep(2)
+    clear()
+    exit()
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 def main():
     startup_question = "What Do You Want To Do?"
-    options = ["Give Me Anime Recommendation", "Search Anime Information","See MyAnimeList"
+    options = ["Give Me Anime Recommendation", "Search Anime Information","See MyAnimeList",
             "Make a Tier List", "See Created Tier Lists", "EXIT"]
     selected_option, index = pick(options, startup_question, indicator="→")
 
@@ -483,7 +559,7 @@ def main():
     elif index == 4:
         see_tier_lists()
     elif index == 5:
-        exit()
+        exit_app()
 
 if __name__ == "__main__":
     main()
