@@ -1,35 +1,83 @@
 [
   {
-    "title": "Kono Subarashii Sekai ni Shukufuku wo!",
-    "score": 8.11,
+    "title": "Spy x Family Part 2",
+    "score": 8.29,
     "genres": [
-      "Adventure",
+      "Action",
+      "Comedy"
+    ],
+    "status": "Finished Airing",
+    "image_url": "https://cdn.myanimelist.net/images/anime/1111/127508.jpg"
+  },
+  {
+    "title": "Spy x Family Season 2",
+    "score": 8.4,
+    "genres": [
+      "Action",
+      "Comedy"
+    ],
+    "status": "Currently Airing",
+    "image_url": "https://cdn.myanimelist.net/images/anime/1506/138982.jpg"
+  },
+  {
+    "title": "Gintama",
+    "score": 8.94,
+    "genres": [
+      "Action",
       "Comedy",
-      "Fantasy"
+      "Sci-Fi"
     ],
     "status": "Finished Airing",
-    "image_url": "https://cdn.myanimelist.net/images/anime/8/77831.jpg"
+    "image_url": "https://cdn.myanimelist.net/images/anime/10/73274.jpg"
   },
   {
-    "title": "Hunter x Hunter (2011)",
-    "score": 9.04,
+    "title": "Btooom!",
+    "score": 7.29,
+    "genres": [
+      "Action",
+      "Sci-Fi",
+      "Suspense"
+    ],
+    "status": "Finished Airing",
+    "image_url": "https://cdn.myanimelist.net/images/anime/4/40977.jpg"
+  },
+  {
+    "title": "Neon Genesis Evangelion",
+    "score": 8.35,
+    "genres": [
+      "Action",
+      "Avant Garde",
+      "Award Winning",
+      "Drama",
+      "Sci-Fi",
+      "Suspense"
+    ],
+    "status": "Finished Airing",
+    "image_url": "https://cdn.myanimelist.net/images/anime/1314/108941.jpg"
+  },
+  {
+    "title": "Fullmetal Alchemist: Brotherhood",
+    "score": 9.1,
     "genres": [
       "Action",
       "Adventure",
+      "Drama",
       "Fantasy"
     ],
     "status": "Finished Airing",
-    "image_url": "https://cdn.myanimelist.net/images/anime/1337/99013.jpg"
+    "image_url": "https://cdn.myanimelist.net/images/anime/1208/94745.jpg"
   },
   {
-    "title": "Naruto",
-    "score": 7.99,
+    "title": "High School DxD",
+    "score": 7.33,
     "genres": [
       "Action",
-      "Adventure",
-      "Fantasy"
+      "Comedy",
+      "Fantasy",
+      "Romance",
+      "Ecchi"
     ],
     "status": "Finished Airing",
-    "image_url": "https://cdn.myanimelist.net/images/anime/13/17405.jpg"
+    "image_url": "https://cdn.myanimelist.net/images/anime/1331/111940.jpg"
   }
 ]

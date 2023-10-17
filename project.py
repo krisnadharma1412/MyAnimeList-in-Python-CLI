@@ -14,45 +14,96 @@ from rich.panel import Panel
 from rich.table import Table
 from pyfiglet import Figlet
 
-def recommend_anime(genre, num_recommendations=3):
-    response = requests.get(
-        f'https://api.jikan.moe/v4/anime?q={genre}&limit=10')
 
-    anime_data = response.json()
-    # Filter anime by genre
-    filtered_anime = [anime for anime in anime_data if genre in anime["genre"]]
-    # If there are no matches, inform the user
-    if not filtered_anime:
-        return "No anime found for the specified genre."
-    # Randomly select recommended anime
-    recommendations = random.sample(filtered_anime, min(
-        num_recommendations, len(filtered_anime)))
+def see_myanimelist():
+    json_file_path = 'my_anime_list.json'
 
-    return recommendations
-
-def search_anime(title):
-    response = requests.get(f'https://api.jikan.moe/v4/anime?q={title}&limit=10')
-    anime_data = response.json()
+    # Check if the file exist
+    if not os.path.exists(json_file_path):
+        print("No MyAnimeList found. Please add anime to your list first.")
+        back_to_main_menu(3)
+    # Load data from the JSON file
+    with open(json_file_path) as json_file:
+        data = json.load(json_file)
     # Create a PrettyTable instance
     table = PrettyTable()
     # Define the table columns
     table.field_names = ["No.","Title", "MyAnimeList Score", "Genres", "Status"]
     
-    # Extracting information
-    # Retrieve every anime related to the search
-    for i in range(len(anime_data['data'])):
-        anime_info = anime_data['data'][i]
+    for i in range(len(data)):
+        genres = ', '.join(data[i]['genres'])
+        table.add_row([i+1,data[i]['title'], data[i]['score'], genres, data[i]['status']])
+    
+    # Figlet header
+    fig = Figlet()
+    header = fig.renderText("MyAnimeList")
+    print(header)
+    print(f"\n{table}\n\n")
+    print("What Do You Want To Do?")
+    print("1. Add an Anime To Your List")
+    print("2. Delete an Anime From Your List")
+    print("3. Back To Main Menu")
+
+    while True:
+        selected_option = input(f"\nEnter the number of your choice: ")
+        if selected_option == "1":
+            search_anime()
+        elif selected_option == "2":
+            print(delete_anime(data))
+            time.sleep(3)
+            clear()
+            see_myanimelist()
+        elif selected_option == "3":
+            back_to_main_menu()
+        else:
+            print("Invalid choice. Please enter a valid number.")
+
+def create_table_from_api(data):
+    # Create a PrettyTable instance
+    table = PrettyTable()
+    # Define the table columns
+    table.field_names = ["No.","Title", "MyAnimeList Score", "Genres", "Status"]
+    
+    # Extracting Data
+    for i in range(len(data['data'])):
+        anime_info = data['data'][i]
         title = anime_info['title']
         score = anime_info['score']
         genres = [
             genre['name'] for genre in anime_info['genres']
         ]
+        genres = ', '.join(genres)
         status = anime_info['status']
 
         # Add a row to the table
         table.add_row([i+1,title, score, genres, status])
-    print(f"Search Results:\n{table}")
+    return table
 
+def recommend_anime():
+    genre = input('What kind of genre you want?: ')
+    # Search top anime based on the genre
+    response = requests.get(f'https://api.jikan.moe/v4/anime?genre=%27{genre}%27&order_by=score&sort=desc')
+    anime_data = response.json()
+    table = create_table_from_api(anime_data)
+    print(f"Our Anime Recommendation Based on the Genre:\n{table}\n")
+    while True:
+        answer1 = input(f"Do you want to add an Anime To Your List (y/n): ")
+        if answer1 == "y":
+            add_anime_to_json(anime_data)
+        elif answer1 == "n":
+            while True:
+                answer2 = input(f"Do you want to search other Genre (y/n): ")
+                if answer2 == "y":
+                    clear()
+                    recommend_anime()
+                elif answer2 == "n":
+                    back_to_main_menu()
+                else:
+                    print("Invalid choice. Please enter a valid number.")
+        else:
+            print("Invalid choice. Please enter a valid number.")
+            
+def add_anime_to_json(anime_data):
     while True:
         try:
             # Ask the user to choose a number from the displayed results
@@ -96,53 +147,36 @@ def search_anime(title):
         except ValueError:
             print("Invalid input. Please enter a number.")
 
-def see_myanimelist():
-    json_file_path = 'my_anime_list.json'
+def search_anime():
+    title = input('Search Anime Keyword: ')
+    response = requests.get(f'https://api.jikan.moe/v4/anime?q={title}&limit=10')
+    anime_data = response.json()
+    table = create_table_from_api(anime_data)
 
-    # Check if the file exist
-    if not os.path.exists(json_file_path):
-        print("No MyAnimeList found. Please add anime to your list first.")
-        back_to_main_menu()
-    # Load data from the JSON file
-    with open(json_file_path) as json_file:
-        data = json.load(json_file)
-    # Create a PrettyTable instance
-    table = PrettyTable()
-    # Define the table columns
-    table.field_names = ["No.","Title", "MyAnimeList Score", "Genres", "Status"]
-    
-    for i in range(len(data)):
-        table.add_row([i+1,data[i]['title'], data[i]['score'], data[i]['genres'], data[i]['status']])
-
-    # Figlet header
-    fig = Figlet()
-    header = fig.renderText("MyAnimeList")
-    print(header)
-    print(f"\n{table}\n\n")
-    print("What Do You Want To Do?")
-    print("1. Add Anime To Your List")
-    print("2. Delete Anime From Your List")
-    print("3. Back To Main Menu")
+    print(f"Search Results Base on the Keyword:\n{table}\n")
 
     while True:
-        selected_option = input(f"\nEnter the number of your choice: ")
-        if selected_option == "1":
-            anime_title = input('Search Anime: ')
-            search_anime(anime_title)
-        elif selected_option == "2":
-            print(delete_anime(data))
-            time.sleep(3)
-            clear()
-            see_myanimelist()
-        elif selected_option == "3":
-            back_to_main_menu()
+        answer1 = input(f"Do you want to add an Anime To Your List (y/n): ")
+        if answer1 == "y":
+            add_anime_to_json(anime_data)
+        elif answer1 == "n":
+            while True:
+                answer2 = input(f"Do you want to search other Anime (y/n): ")
+                if answer2 == "y":
+                    clear()
+                    search_anime()
+                elif answer2 == "n":
+                    back_to_main_menu()
+                else:
+                    print("Invalid choice. Please enter a valid number.")
         else:
             print("Invalid choice. Please enter a valid number.")
+    
 
-def back_to_main_menu():
+def back_to_main_menu(seconds=2):
     print("back to main menu...")
     # Add a delay of 2 seconds
-    time.sleep(2)
+    time.sleep(seconds)
     # Clear the terminal screen
     clear()
     time.sleep(1)
@@ -167,8 +201,6 @@ def delete_anime(data):
                     return "No changes were made."
         if not found:
             print(f"No anime with the title '{title}' found in 'my_anime_list.json'. Please try again.")
-    
-    
 
 def load_or_create_json() -> None:
     if os.path.exists("animes.json"):
@@ -543,17 +575,16 @@ def clear():
 
 def main():
     startup_question = "What Do You Want To Do?"
-    options = ["Give Me Anime Recommendation", "Search Anime Information","See MyAnimeList",
+    options = ["See MyAnimeList", "Give Me Anime Recommendation", "Search Anime Information",
             "Make a Tier List", "See Created Tier Lists", "EXIT"]
     selected_option, index = pick(options, startup_question, indicator="→")
 
     if index == 0:
-        recommend_anime()
-    elif index == 1:
-        anime_title = input('Search Anime: ')
-        search_anime(anime_title)
-    elif index == 2:
         see_myanimelist()
+    elif index == 1:
+        recommend_anime()
+    elif index == 2:
+        search_anime()
     elif index == 3:
         create_tier_list()
     elif index == 4:
