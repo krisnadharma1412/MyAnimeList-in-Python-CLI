@@ -1,18 +1,19 @@
-import json
 import os
-import random
 import time
-from datetime import datetime
-from io import BytesIO
-from typing import List
-from prettytable import PrettyTable
+import json
 import requests
 from pick import pick
+from io import BytesIO
+from pyfiglet import Figlet
+from itertools import islice
 from PIL import Image, ImageDraw, ImageFont
+from datetime import datetime
+# Rich Library
 from rich import print
 from rich.panel import Panel
 from rich.table import Table
-from pyfiglet import Figlet
+from rich.console import Console
+from rich.text import Text
 
 
 def see_myanimelist():
@@ -25,24 +26,45 @@ def see_myanimelist():
     # Load data from the JSON file
     with open(json_file_path) as json_file:
         data = json.load(json_file)
-    # Create a PrettyTable instance
-    table = PrettyTable()
-    # Define the table columns
-    table.field_names = ["No.","Title", "MyAnimeList Score", "Genres", "Status"]
-    
+
+    # Create a Rich Table instance
+    table = Table(title=Text("MyAnimeList", style="bold"))
+    table.add_column("No.", style="cyan", justify="right")
+    table.add_column("Title", style="magenta")
+    table.add_column("MyAnimeList Score", style="green")
+    table.add_column("Genres", style="yellow")
+    table.add_column("Status", style="cyan")
+
+    # Extracting Data from JSON
     for i in range(len(data)):
         genres = ', '.join(data[i]['genres'])
-        table.add_row([i+1,data[i]['title'], data[i]['score'], genres, data[i]['status']])
+        table.add_row(
+            str(i + 1),
+            data[i]['title'],
+            str(data[i]['score']),
+            genres,
+            data[i]['status']
+        )
     
-    # Figlet header
-    fig = Figlet()
-    header = fig.renderText("MyAnimeList")
-    print(header)
-    print(f"\n{table}\n\n")
-    print("What Do You Want To Do?")
-    print("1. Add an Anime To Your List")
-    print("2. Delete an Anime From Your List")
-    print("3. Back To Main Menu")
+    # Create a Rich Console instance
+    console = Console()
+    # Print the table
+    console.print(f"\n\n")
+    console.print(table)
+    # Create a Panel for the menu options
+    menu_panel = Panel(
+        """
+        What Do You Want To Do?
+        1. Add an Anime To Your List
+        2. Delete an Anime From Your List
+        3. Back To Main Menu
+        """,
+        title="Menu Options",
+        border_style="green",
+        padding=(1, 2),
+    )
+    # Print the menu panel
+    print(menu_panel)
 
     while True:
         selected_option = input(f"\nEnter the number of your choice: ")
@@ -57,13 +79,19 @@ def see_myanimelist():
             back_to_main_menu()
         else:
             print("Invalid choice. Please enter a valid number.")
+            clear()
+            see_myanimelist()
 
-def create_table_from_api(data):
-    # Create a PrettyTable instance
-    table = PrettyTable()
+def create_table_from_api(data, title="MyAnimeList"):
+    # Create a Rich Table instance
+    table = Table(title=Text(title, style="bold"))
     # Define the table columns
-    table.field_names = ["No.","Title", "MyAnimeList Score", "Genres", "Status"]
-    
+    table.add_column("No.", style="cyan", justify="right")
+    table.add_column("Title", style="magenta")
+    table.add_column("MyAnimeList Score", style="green")
+    table.add_column("Genres", style="yellow")
+    table.add_column("Status", style="cyan")
+
     # Extracting Data
     for i in range(len(data['data'])):
         anime_info = data['data'][i]
@@ -76,16 +104,57 @@ def create_table_from_api(data):
         status = anime_info['status']
 
         # Add a row to the table
-        table.add_row([i+1,title, score, genres, status])
+        table.add_row(str(i+1),title, str(score), genres, status)
     return table
 
 def recommend_anime():
-    genre = input('What kind of genre you want?: ')
+    # Create a Rich Console instance
+    console = Console()
+    clear()
+    # Request Genre Information From Jikan API
+    genre_api = requests.get('https://api.jikan.moe/v4/genres/anime').json()
+    # Create Rich Table for Genre Information
+    table = Table(title=Text("Anime Genres", style="bold"))
+    table.add_column("MAL ID", style="green")
+    table.add_column("Genre Example", style="magenta")
+    # Sort Table base on ID
+    sorted_data = sorted(genre_api['data'], key=lambda x: x['mal_id'])
+    # Extract Data
+    # for entry in sorted_data: #All Genres Displayed
+    for entry in islice(sorted_data,10): #limit to 10 rows
+        table.add_row(str(entry['mal_id']), entry['name'])
+    
+    console.print(table)
+    # Define the link URL
+    link_url = "https://myanimelist.net/anime.php"
+    # Print the formatted link
+    console.print(f"See All Genres in this link: {link_url}", style="bold green")
+
+    # Create a mapping of genre names to their IDs
+    genre_name_to_id = {entry['name']: entry['mal_id'] for entry in genre_api['data']}
+    
+    while True:
+        genre = input('What kind of genre you want? (id or genres name): ')
+        # if the genre is str, Convert the user input to the corresponding genre ID
+        if not genre.isdigit(): #if the input is not a number
+            genre_str = genre
+            genre = genre_name_to_id.get(genre.capitalize())
+            if genre is None:
+                console.print(f"Genre {genre_str} is not available", style="bold red")
+                continue
+        #if the input is not valid
+        available_genre = [genre['mal_id'] for genre in genre_api['data']]
+        if int(genre) not in available_genre: 
+            console.print("Genre is not available", style="bold red")
+        else:
+            break
+        
     # Search top anime based on the genre
-    response = requests.get(f'https://api.jikan.moe/v4/anime?genre=%27{genre}%27&order_by=score&sort=desc')
+    response = requests.get(f'https://api.jikan.moe/v4/anime?genres={genre}&order_by=score&sort=desc')
     anime_data = response.json()
-    table = create_table_from_api(anime_data)
-    print(f"Our Anime Recommendation Based on the Genre:\n{table}\n")
+    clear()
+    table = create_table_from_api(anime_data,"Anime Recommendation")
+    console.print(table)
     while True:
         answer1 = input(f"Do you want to add an Anime To Your List (y/n): ")
         if answer1 == "y":
@@ -102,7 +171,7 @@ def recommend_anime():
                     print("Invalid choice. Please enter a valid number.")
         else:
             print("Invalid choice. Please enter a valid number.")
-            
+
 def add_anime_to_json(anime_data):
     while True:
         try:
@@ -127,13 +196,18 @@ def add_anime_to_json(anime_data):
                     # File already exists, load existing data
                     with open(json_file_path, 'r') as json_file:
                         existing_data = json.load(json_file)
-                    # Append existing data with new selected anime
-                    existing_data.append(new_anime)
-                    # Write the updated data back to the file
-                    with open(json_file_path, 'w') as json_file:
-                        json.dump(existing_data, json_file, indent=2)
                     
-                    print(f"Anime '{new_anime['title']}' has been added in 'my_anime_list.json'")
+                    # Check if an anime with the same title already exists
+                    if any(anime['title'] == new_anime['title'] for anime in existing_data):
+                        print(f"Anime '{new_anime['title']}' is already in 'my_anime_list.json'")
+                    else:
+                        # Append existing data with new selected anime
+                        existing_data.append(new_anime)
+                        # Write the updated data back to the file
+                        with open(json_file_path, 'w') as json_file:
+                            json.dump(existing_data, json_file, indent=2)
+                        
+                        print(f"Anime '{new_anime['title']}' has been added in 'my_anime_list.json'")
                 else:
                     # File does not exist, create a new file with selected anime data
                     existing_data = [new_anime]
@@ -148,12 +222,12 @@ def add_anime_to_json(anime_data):
             print("Invalid input. Please enter a number.")
 
 def search_anime():
+    console = Console()
     title = input('Search Anime Keyword: ')
     response = requests.get(f'https://api.jikan.moe/v4/anime?q={title}&limit=10')
     anime_data = response.json()
-    table = create_table_from_api(anime_data)
-
-    print(f"Search Results Base on the Keyword:\n{table}\n")
+    table = create_table_from_api(anime_data, "Search Results")
+    console.print(table)
 
     while True:
         answer1 = input(f"Do you want to add an Anime To Your List (y/n): ")
@@ -184,7 +258,7 @@ def back_to_main_menu(seconds=2):
 
 def delete_anime(data):
     while True:
-        title = input('Anime: ').strip()
+        title = input('Enter the title of the Anime: ').strip()
         found = False
         for i in range(len(data)):
             if data[i]['title'] == title:
@@ -202,6 +276,7 @@ def delete_anime(data):
         if not found:
             print(f"No anime with the title '{title}' found in 'my_anime_list.json'. Please try again.")
 
+# Tier List
 def load_or_create_json() -> None:
     if os.path.exists("animes.json"):
         with open("animes.json") as file:
@@ -216,8 +291,8 @@ def create_tier_list_helper(animes_to_rank, tier_name):
     # if there are no more animes to rank, return an empty list
     if not animes_to_rank:
         return []
-
-    question = f"Select the animes you want to rank in  {tier_name}"
+    hint = "Use -> to select the anime and ENTER to Finish The Tier List"
+    question = f"{hint}\n\nSelect the animes you want to rank in  {tier_name}"
     tier_picks = pick(options=animes_to_rank, title=question,
                       multiselect=True, indicator="→", min_selection_count=0)
     tier_picks = [x[0] for x in tier_picks]
@@ -227,26 +302,31 @@ def create_tier_list_helper(animes_to_rank, tier_name):
 
     return tier_picks
 
-
 def get_anime_cover(anime):
-    response = requests.get(
-        f'https://api.jikan.moe/v4/anime?q={anime}&limit=1')
-    cover_url = response.json()['images']['jpg']['image_url']
+    with open("my_anime_list.json") as file:
+        data = json.load(file)
+    for i in range(len(data)):
+        if data[i]['title'] == anime:
+            cover_url = data[i]['image_url']
     return cover_url
 
 
 def create_tier_list():
+    clear()
+    console = Console()
     load_or_create_json()
     with open("animes.json") as file:
         anime_file = json.load(file)
 
     print("TIERS - S, A, B, C, D, E")
 
-    # keep only the album name by splitting the string at the first - and removing the first element
-    animes_to_rank = [x.split(" - ", 1)[1] for x in animes_to_rank[1:]]
+    # Extract the anime from my_anime_list.json
+    with open("my_anime_list.json") as file:
+        my_anime_list = json.load(file)
+    animes_to_rank = [anime['title'] for anime in my_anime_list]
 
     # Name the tier list
-    question = "What do you want to call this tier list?"
+    question = "What do you want to call this tier list? "
     tier_list_name = input(question).strip()
 
     # repeat until the user enters at least one character
@@ -263,14 +343,14 @@ def create_tier_list():
 
     # A TIER
     question = "Select the animes you want to rank in A Tier:"
-    a_tier_picks = create_tier_list_helper(animes_to_rank, "S Tier")
+    a_tier_picks = create_tier_list_helper(animes_to_rank, "A Tier")
     a_tier_covers = [get_anime_cover(anime) for anime in a_tier_picks]
     a_tier = [{"anime": anime, "cover_art": cover}
                 for anime, cover in zip(a_tier_picks, a_tier_covers)]
 
     # B TIER
     question = "Select the animes you want to rank in B Tier:"
-    b_tier_picks = create_tier_list_helper(animes_to_rank, "S Tier")
+    b_tier_picks = create_tier_list_helper(animes_to_rank, "B Tier")
     b_tier_covers = [get_anime_cover(anime) for anime in b_tier_picks]
     b_tier = [{"anime": anime, "cover_art": cover}
                 for anime, cover in zip(b_tier_picks, b_tier_covers)]
@@ -299,6 +379,7 @@ def create_tier_list():
     # check if all tiers are empty and if so, exit
     if not any([s_tier_picks, a_tier_picks, b_tier_picks, c_tier_picks, d_tier_picks, e_tier_picks]):
         print("All tiers are empty. Exiting...")
+        time.sleep(2)
         return
 
     # # add the animes that were picked to the tier list
@@ -319,7 +400,8 @@ def create_tier_list():
     # save the json file
     with open("animes.json", "w") as f:
         json.dump(anime_file, f, indent=4)
-    return
+    message = f"Tier list '{tier_list_name}' created successfully !"
+    return message
 
 
 def image_generator(file_name, data):
@@ -557,16 +639,17 @@ def see_tier_lists():
 
     for key in data["tier_lists"]:
         image_generator(f"{key['tier_list_name']}.png", key)
-        print(
-            f"✅ [b green]CREATED[/b green] {key['tier_list_name']} tier list.")
+        print(f"✅ [b green]CREATED[/b green] {key['tier_list_name']} tier list.")
 
     print("✅ [b green]DONE[/b green]. Check the directory for the tier lists.")
     return
 
 def exit_app():
     clear()
-    print(Figlet().renderText("See You Again!"))
-    time.sleep(2)
+    console = Console()
+    console.print(f'[bold green]{Figlet().renderText("See You Again!")}[/bold green]')
+    console.print("Thank you for using the CLI MyAnimeList")
+    time.sleep(3)
     clear()
     exit()
 
@@ -574,7 +657,11 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def main():
-    startup_question = "What Do You Want To Do?"
+    figlet_text = Figlet().renderText("WELCOME TO  CLI  MyAnimeList")
+    formatted_text = Text.from_markup(f"{figlet_text}\n\nMain Menu")
+    
+    # Convert Text object to a string
+    startup_question = formatted_text.plain
     options = ["See MyAnimeList", "Give Me Anime Recommendation", "Search Anime Information",
             "Make a Tier List", "See Created Tier Lists", "EXIT"]
     selected_option, index = pick(options, startup_question, indicator="→")
