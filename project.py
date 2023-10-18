@@ -8,6 +8,7 @@ from pyfiglet import Figlet
 from itertools import islice
 from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime
+
 # Rich Library
 from rich import print
 from rich.panel import Panel
@@ -16,12 +17,13 @@ from rich.console import Console
 from rich.text import Text
 
 
+# MENU 1
 def see_myanimelist():
-    json_file_path = 'my_anime_list.json'
+    json_file_path = "my_anime_list.json"
 
     # Check if the file exist
     if not os.path.exists(json_file_path):
-        print("No MyAnimeList found. Please add anime to your list first.")
+        print("❌ [b red]No MyAnimeList found. Please add anime to your list first.[/b red]")
         back_to_main_menu(3)
     # Load data from the JSON file
     with open(json_file_path) as json_file:
@@ -37,15 +39,15 @@ def see_myanimelist():
 
     # Extracting Data from JSON
     for i in range(len(data)):
-        genres = ', '.join(data[i]['genres'])
+        genres = ", ".join(data[i]["genres"])
         table.add_row(
             str(i + 1),
-            data[i]['title'],
-            str(data[i]['score']),
+            data[i]["title"],
+            str(data[i]["score"]),
             genres,
-            data[i]['status']
+            data[i]["status"],
         )
-    
+
     # Create a Rich Console instance
     console = Console()
     # Print the table
@@ -69,6 +71,7 @@ def see_myanimelist():
     while True:
         selected_option = input(f"\nEnter the number of your choice: ")
         if selected_option == "1":
+            clear()
             search_anime()
         elif selected_option == "2":
             print(delete_anime(data))
@@ -78,9 +81,10 @@ def see_myanimelist():
         elif selected_option == "3":
             back_to_main_menu()
         else:
-            print("Invalid choice. Please enter a valid number.")
+            print("❌ [b red]Invalid choice. Please enter a valid number.[/b red]")
             clear()
             see_myanimelist()
+
 
 def create_table_from_api(data, title="MyAnimeList"):
     # Create a Rich Table instance
@@ -93,37 +97,37 @@ def create_table_from_api(data, title="MyAnimeList"):
     table.add_column("Status", style="cyan")
 
     # Extracting Data
-    for i in range(len(data['data'])):
-        anime_info = data['data'][i]
-        title = anime_info['title']
-        score = anime_info['score']
-        genres = [
-            genre['name'] for genre in anime_info['genres']
-        ]
-        genres = ', '.join(genres)
-        status = anime_info['status']
+    for i in range(len(data["data"])):
+        anime_info = data["data"][i]
+        title = anime_info["title"]
+        score = anime_info["score"]
+        genres = [genre["name"] for genre in anime_info["genres"]]
+        genres = ", ".join(genres)
+        status = anime_info["status"]
 
         # Add a row to the table
-        table.add_row(str(i+1),title, str(score), genres, status)
+        table.add_row(str(i + 1), title, str(score), genres, status)
     return table
 
+
+# MENU 2
 def recommend_anime():
     # Create a Rich Console instance
     console = Console()
     clear()
     # Request Genre Information From Jikan API
-    genre_api = requests.get('https://api.jikan.moe/v4/genres/anime').json()
+    genre_api = requests.get("https://api.jikan.moe/v4/genres/anime").json()
     # Create Rich Table for Genre Information
     table = Table(title=Text("Anime Genres", style="bold"))
     table.add_column("MAL ID", style="green")
     table.add_column("Genre Example", style="magenta")
     # Sort Table base on ID
-    sorted_data = sorted(genre_api['data'], key=lambda x: x['mal_id'])
+    sorted_data = sorted(genre_api["data"], key=lambda x: x["mal_id"])
     # Extract Data
     # for entry in sorted_data: #All Genres Displayed
-    for entry in islice(sorted_data,10): #limit to 10 rows
-        table.add_row(str(entry['mal_id']), entry['name'])
-    
+    for entry in islice(sorted_data, 10):  # limit to 10 rows
+        table.add_row(str(entry["mal_id"]), entry["name"])
+
     console.print(table)
     # Define the link URL
     link_url = "https://myanimelist.net/anime.php"
@@ -131,29 +135,31 @@ def recommend_anime():
     console.print(f"See All Genres in this link: {link_url}", style="bold green")
 
     # Create a mapping of genre names to their IDs
-    genre_name_to_id = {entry['name']: entry['mal_id'] for entry in genre_api['data']}
-    
+    genre_name_to_id = {entry["name"]: entry["mal_id"] for entry in genre_api["data"]}
+
     while True:
-        genre = input('What kind of genre you want? (id or genres name): ')
+        genre = input("What kind of genre you want? (id or genres name): ")
         # if the genre is str, Convert the user input to the corresponding genre ID
-        if not genre.isdigit(): #if the input is not a number
+        if not genre.isdigit():  # if the input is not a number
             genre_str = genre
             genre = genre_name_to_id.get(genre.capitalize())
             if genre is None:
                 console.print(f"Genre {genre_str} is not available", style="bold red")
                 continue
-        #if the input is not valid
-        available_genre = [genre['mal_id'] for genre in genre_api['data']]
-        if int(genre) not in available_genre: 
+        # if the input is not valid
+        available_genre = [genre["mal_id"] for genre in genre_api["data"]]
+        if int(genre) not in available_genre:
             console.print("Genre is not available", style="bold red")
         else:
             break
-        
+
     # Search top anime based on the genre
-    response = requests.get(f'https://api.jikan.moe/v4/anime?genres={genre}&order_by=score&sort=desc')
+    response = requests.get(
+        f"https://api.jikan.moe/v4/anime?genres={genre}&order_by=score&sort=desc"
+    )
     anime_data = response.json()
     clear()
-    table = create_table_from_api(anime_data,"Anime Recommendation")
+    table = create_table_from_api(anime_data, "Anime Recommendation")
     console.print(table)
     while True:
         answer1 = input(f"Do you want to add an Anime To Your List (y/n): ")
@@ -168,63 +174,74 @@ def recommend_anime():
                 elif answer2 == "n":
                     back_to_main_menu()
                 else:
-                    print("Invalid choice. Please enter a valid number.")
+                    print("❌ [b red]Invalid choice. Please enter a valid number.[/b red]")
         else:
-            print("Invalid choice. Please enter a valid number.")
+            print("❌ [b red]Invalid choice. Please enter a valid number.[/b red]")
+
 
 def add_anime_to_json(anime_data):
     while True:
         try:
             # Ask the user to choose a number from the displayed results
-            selected_no = int(input("Enter the number of the anime you want to save to your MyAnimeList (0 to cancel or exit): "))
-            if 1 <= selected_no <= len(anime_data['data']):
+            selected_no = int(
+                input(
+                    "Enter the number of the anime you want to save to your MyAnimeList (0 to cancel or exit): "
+                )
+            )
+            if 1 <= selected_no <= len(anime_data["data"]):
                 # User selected a valid anime
-                selected_anime = anime_data['data'][selected_no - 1]
+                selected_anime = anime_data["data"][selected_no - 1]
                 # Make a list of dictionary to store the selected anime
                 new_anime = {
-                    'title': selected_anime['title'],
-                    'score': selected_anime['score'],
-                    'genres': [
-                        genre['name'] for genre in selected_anime['genres']
-                    ],
-                    'status': selected_anime['status'],
-                    'image_url': selected_anime['images']['jpg']['image_url']
+                    "title": selected_anime["title"],
+                    "score": selected_anime["score"],
+                    "genres": [genre["name"] for genre in selected_anime["genres"]],
+                    "status": selected_anime["status"],
+                    "image_url": selected_anime["images"]["jpg"]["image_url"],
                 }
                 # Json File Name
-                json_file_path = 'my_anime_list.json'
+                json_file_path = "my_anime_list.json"
                 if os.path.exists(json_file_path):
                     # File already exists, load existing data
-                    with open(json_file_path, 'r') as json_file:
+                    with open(json_file_path, "r") as json_file:
                         existing_data = json.load(json_file)
-                    
+
                     # Check if an anime with the same title already exists
-                    if any(anime['title'] == new_anime['title'] for anime in existing_data):
-                        print(f"Anime '{new_anime['title']}' is already in 'my_anime_list.json'")
+                    if any(
+                        anime["title"] == new_anime["title"] for anime in existing_data
+                    ):
+                        print(
+                            f"❌ [b red]Anime '{new_anime['title']}' is already in 'my_anime_list.json'[/b red]"
+                        )
                     else:
                         # Append existing data with new selected anime
                         existing_data.append(new_anime)
                         # Write the updated data back to the file
-                        with open(json_file_path, 'w') as json_file:
+                        with open(json_file_path, "w") as json_file:
                             json.dump(existing_data, json_file, indent=2)
-                        
-                        print(f"Anime '{new_anime['title']}' has been added in 'my_anime_list.json'")
+
+                        print(
+                            f"✅ Anime '{new_anime['title']}' has been added in 'my_anime_list.json'"
+                        )
                 else:
                     # File does not exist, create a new file with selected anime data
                     existing_data = [new_anime]
                     # Write the new data to the file
-                    with open(json_file_path, 'w') as json_file:
+                    with open(json_file_path, "w") as json_file:
                         json.dump(existing_data, json_file, indent=2)
-                    
-                    print(f"Anime '{new_anime['title']}' saved to 'my_anime_list.json'")
+
+                    print(f"✅ Anime '{new_anime['title']}' saved to 'my_anime_list.json'")
             else:
                 back_to_main_menu()
         except ValueError:
-            print("Invalid input. Please enter a number.")
+            print("❌ [b red]Invalid input. Please enter a number.[/b red]")
 
+
+# MENU 3
 def search_anime():
     console = Console()
-    title = input('Search Anime Keyword: ')
-    response = requests.get(f'https://api.jikan.moe/v4/anime?q={title}&limit=10')
+    title = input("Search Anime Keyword: ")
+    response = requests.get(f"https://api.jikan.moe/v4/anime?q={title}&limit=10")
     anime_data = response.json()
     table = create_table_from_api(anime_data, "Search Results")
     console.print(table)
@@ -242,13 +259,13 @@ def search_anime():
                 elif answer2 == "n":
                     back_to_main_menu()
                 else:
-                    print("Invalid choice. Please enter a valid number.")
+                    print("❌ [b red]Invalid choice. Please enter a valid number.[/b red]")
         else:
-            print("Invalid choice. Please enter a valid number.")
-    
+            print("❌ [b red]Invalid choice. Please enter a valid number.[/b red]")
+
 
 def back_to_main_menu(seconds=2):
-    print("back to main menu...")
+    print("[b yellow]back to main menu...[/b yellow]")
     # Add a delay of 2 seconds
     time.sleep(seconds)
     # Clear the terminal screen
@@ -256,27 +273,34 @@ def back_to_main_menu(seconds=2):
     time.sleep(1)
     main()
 
+
 def delete_anime(data):
     while True:
-        title = input('Enter the title of the Anime: ').strip()
+        title = input("Enter the title of the Anime: ").strip()
         found = False
         for i in range(len(data)):
-            if data[i]['title'] == title:
+            if data[i]["title"] == title:
                 found = True
                 # ask for confirmation to confirm delete
-                confirm = input(f"Are you sure you want to delete '{title}' from 'my_anime_list.json'? (y/n) ")
-                if confirm.lower() == 'y':
+                console = Console()
+                console.print(
+                    f"Are you sure you want to delete [cyan]'{title}'[/cyan] from [blue]'MyAnimeList Table'?[/blue] (y/n)", end=" "
+                )
+                confirm = input().strip()
+                if confirm.lower() == "y":
                     del data[i]
-                    with open('my_anime_list.json', 'w') as json_file:
+                    with open("my_anime_list.json", "w") as json_file:
                         json.dump(data, json_file, indent=2)
                     clear()
-                    return f"Anime '{title}' has been deleted from 'my_anime_list.json'"
-                elif confirm.lower() == 'n':
+                    return f"✅ Anime '{title}' has been deleted from 'my_anime_list.json'"
+                elif confirm.lower() == "n":
                     return "No changes were made."
         if not found:
-            print(f"No anime with the title '{title}' found in 'my_anime_list.json'. Please try again.")
+            print(
+                f"❌ [b red]No anime with the title '{title}' found in MyAnimeList table. Please try again.[/b red]"
+            )
 
-# Tier List
+
 def load_or_create_json() -> None:
     if os.path.exists("animes.json"):
         with open("animes.json") as file:
@@ -287,14 +311,20 @@ def load_or_create_json() -> None:
             ratings = {"anime_ratings": [], "tier_lists": []}
             json.dump(ratings, file)
 
+
 def create_tier_list_helper(animes_to_rank, tier_name):
     # if there are no more animes to rank, return an empty list
     if not animes_to_rank:
         return []
     hint = "Use -> to select the anime and ENTER to Finish The Tier List"
     question = f"{hint}\n\nSelect the animes you want to rank in  {tier_name}"
-    tier_picks = pick(options=animes_to_rank, title=question,
-                      multiselect=True, indicator="→", min_selection_count=0)
+    tier_picks = pick(
+        options=animes_to_rank,
+        title=question,
+        multiselect=True,
+        indicator="→",
+        min_selection_count=0,
+    )
     tier_picks = [x[0] for x in tier_picks]
 
     for anime in tier_picks:
@@ -302,17 +332,24 @@ def create_tier_list_helper(animes_to_rank, tier_name):
 
     return tier_picks
 
+
 def get_anime_cover(anime):
     with open("my_anime_list.json") as file:
         data = json.load(file)
     for i in range(len(data)):
-        if data[i]['title'] == anime:
-            cover_url = data[i]['image_url']
+        if data[i]["title"] == anime:
+            cover_url = data[i]["image_url"]
     return cover_url
 
 
+# MENU 4
 def create_tier_list():
     clear()
+    # Check if the myanimelist file exist
+    if not os.path.exists("my_anime_list.json"):
+        print("❌ [b red]No MyAnimeList found. Please add anime to your list first.[/b red]")
+        back_to_main_menu(3)
+
     console = Console()
     load_or_create_json()
     with open("animes.json") as file:
@@ -323,7 +360,7 @@ def create_tier_list():
     # Extract the anime from my_anime_list.json
     with open("my_anime_list.json") as file:
         my_anime_list = json.load(file)
-    animes_to_rank = [anime['title'] for anime in my_anime_list]
+    animes_to_rank = [anime["title"] for anime in my_anime_list]
 
     # Name the tier list
     question = "What do you want to call this tier list? "
@@ -338,46 +375,67 @@ def create_tier_list():
     question = "Select the animes you want to rank in S Tier:"
     s_tier_picks = create_tier_list_helper(animes_to_rank, "S Tier")
     s_tier_covers = [get_anime_cover(anime) for anime in s_tier_picks]
-    s_tier = [{"anime": anime, "cover_art": cover}
-                for anime, cover in zip(s_tier_picks, s_tier_covers)]
+    s_tier = [
+        {"anime": anime, "cover_art": cover}
+        for anime, cover in zip(s_tier_picks, s_tier_covers)
+    ]
 
     # A TIER
     question = "Select the animes you want to rank in A Tier:"
     a_tier_picks = create_tier_list_helper(animes_to_rank, "A Tier")
     a_tier_covers = [get_anime_cover(anime) for anime in a_tier_picks]
-    a_tier = [{"anime": anime, "cover_art": cover}
-                for anime, cover in zip(a_tier_picks, a_tier_covers)]
+    a_tier = [
+        {"anime": anime, "cover_art": cover}
+        for anime, cover in zip(a_tier_picks, a_tier_covers)
+    ]
 
     # B TIER
     question = "Select the animes you want to rank in B Tier:"
     b_tier_picks = create_tier_list_helper(animes_to_rank, "B Tier")
     b_tier_covers = [get_anime_cover(anime) for anime in b_tier_picks]
-    b_tier = [{"anime": anime, "cover_art": cover}
-                for anime, cover in zip(b_tier_picks, b_tier_covers)]
+    b_tier = [
+        {"anime": anime, "cover_art": cover}
+        for anime, cover in zip(b_tier_picks, b_tier_covers)
+    ]
 
     # C TIER
     question = "Select the animes you want to rank in C Tier:"
     c_tier_picks = create_tier_list_helper(animes_to_rank, "C Tier")
     c_tier_covers = [get_anime_cover(anime) for anime in c_tier_picks]
-    c_tier = [{"anime": anime, "cover_art": cover}
-                for anime, cover in zip(c_tier_picks, c_tier_covers)]
+    c_tier = [
+        {"anime": anime, "cover_art": cover}
+        for anime, cover in zip(c_tier_picks, c_tier_covers)
+    ]
 
     # D TIER
     question = "Select the animes you want to rank in D Tier:"
     d_tier_picks = create_tier_list_helper(animes_to_rank, "D Tier")
     d_tier_covers = [get_anime_cover(anime) for anime in d_tier_picks]
-    d_tier = [{"anime": anime, "cover_art": cover}
-                for anime, cover in zip(d_tier_picks, d_tier_covers)]
+    d_tier = [
+        {"anime": anime, "cover_art": cover}
+        for anime, cover in zip(d_tier_picks, d_tier_covers)
+    ]
 
     # E TIER
     question = "Select the animes you want to rank in E Tier:"
     e_tier_picks = create_tier_list_helper(animes_to_rank, "E Tier")
     e_tier_covers = [get_anime_cover(anime) for anime in e_tier_picks]
-    e_tier = [{"anime": anime, "cover_art": cover}
-                for anime, cover in zip(e_tier_picks, e_tier_covers)]
+    e_tier = [
+        {"anime": anime, "cover_art": cover}
+        for anime, cover in zip(e_tier_picks, e_tier_covers)
+    ]
 
     # check if all tiers are empty and if so, exit
-    if not any([s_tier_picks, a_tier_picks, b_tier_picks, c_tier_picks, d_tier_picks, e_tier_picks]):
+    if not any(
+        [
+            s_tier_picks,
+            a_tier_picks,
+            b_tier_picks,
+            c_tier_picks,
+            d_tier_picks,
+            e_tier_picks,
+        ]
+    ):
         print("All tiers are empty. Exiting...")
         time.sleep(2)
         return
@@ -391,7 +449,7 @@ def create_tier_list():
         "c_tier": c_tier,
         "d_tier": d_tier,
         "e_tier": e_tier,
-        "time": str(datetime.now())
+        "time": str(datetime.now()),
     }
 
     # add the tier list to the json file
@@ -400,9 +458,25 @@ def create_tier_list():
     # save the json file
     with open("animes.json", "w") as f:
         json.dump(anime_file, f, indent=4)
-    message = f"Tier list '{tier_list_name}' created successfully !"
-    return message
+    console.print(f"✅ Tier list '{tier_list_name}' created successfully !")
+    back_to_main_menu(3) 
 
+# MENU 5
+def see_tier_lists():
+    load_or_create_json()
+    with open("animes.json", "r") as f:
+        data = json.load(f)
+
+    if not data["tier_lists"]:
+        print("❌ [b red]No tier lists have been created yet![/b red]")
+        back_to_main_menu(3) 
+
+    for key in data["tier_lists"]:
+        image_generator(f"{key['tier_list_name']}.png", key)
+        print(f"✅ [b green]CREATED[/b green] {key['tier_list_name']} tier list.")
+
+    print("✅ [b green]DONE[/b green]. Check the directory for the tier lists.")
+    back_to_main_menu(3) 
 
 def image_generator(file_name, data):
     # return if the file already exists
@@ -428,10 +502,16 @@ def image_generator(file_name, data):
     # leftmost side - make a square with text inside the square and fill color
     if col_pos == 0:
         draw = ImageDraw.Draw(image)
-        draw.rectangle((col_pos, row_pos, col_pos + increment_size,
-                       row_pos + increment_size), fill="red")
-        draw.text((col_pos + (increment_size//3), row_pos +
-                  (increment_size//3)), "S Tier", font=tier_font, fill="white")
+        draw.rectangle(
+            (col_pos, row_pos, col_pos + increment_size, row_pos + increment_size),
+            fill="red",
+        )
+        draw.text(
+            (col_pos + (increment_size // 3), row_pos + (increment_size // 3)),
+            "S Tier",
+            font=tier_font,
+            fill="white",
+        )
         col_pos += increment_size
 
     for anime in data["s_tier"]:
@@ -453,8 +533,7 @@ def image_generator(file_name, data):
         if len(name) > text_cutoff_value:
             name = f"{name[:text_cutoff_value]}..."
 
-        draw.text((col_pos, row_pos + increment_size),
-                  name, font=font, fill="white")
+        draw.text((col_pos, row_pos + increment_size), name, font=font, fill="white")
 
         # Increment the column position
         col_pos += 200
@@ -471,10 +550,16 @@ def image_generator(file_name, data):
     """A TIER"""
     if col_pos == 0:
         draw = ImageDraw.Draw(image)
-        draw.rectangle((col_pos, row_pos, col_pos + increment_size,
-                       row_pos + increment_size), fill="orange")
-        draw.text((col_pos + (increment_size//3), row_pos +
-                  (increment_size//3)), "A Tier", font=tier_font, fill="white")
+        draw.rectangle(
+            (col_pos, row_pos, col_pos + increment_size, row_pos + increment_size),
+            fill="orange",
+        )
+        draw.text(
+            (col_pos + (increment_size // 3), row_pos + (increment_size // 3)),
+            "A Tier",
+            font=tier_font,
+            fill="white",
+        )
         col_pos += increment_size
 
     for anime in data["a_tier"]:
@@ -488,8 +573,7 @@ def image_generator(file_name, data):
         if len(name) > text_cutoff_value:
             name = f"{name[:text_cutoff_value]}..."
 
-        draw.text((col_pos, row_pos + increment_size),
-                  name, font=font, fill="white")
+        draw.text((col_pos, row_pos + increment_size), name, font=font, fill="white")
 
         col_pos += 200
         if col_pos > image_width - increment_size:
@@ -502,10 +586,16 @@ def image_generator(file_name, data):
     """B TIER"""
     if col_pos == 0:
         draw = ImageDraw.Draw(image)
-        draw.rectangle((col_pos, row_pos, col_pos + increment_size,
-                       row_pos + increment_size), fill="yellow")
-        draw.text((col_pos + (increment_size//3), row_pos +
-                  (increment_size//3)), "B Tier", font=tier_font, fill="black")
+        draw.rectangle(
+            (col_pos, row_pos, col_pos + increment_size, row_pos + increment_size),
+            fill="yellow",
+        )
+        draw.text(
+            (col_pos + (increment_size // 3), row_pos + (increment_size // 3)),
+            "B Tier",
+            font=tier_font,
+            fill="black",
+        )
         col_pos += increment_size
 
     for anime in data["b_tier"]:
@@ -519,8 +609,7 @@ def image_generator(file_name, data):
         if len(name) > text_cutoff_value:
             name = f"{name[:text_cutoff_value]}..."
 
-        draw.text((col_pos, row_pos + increment_size),
-                  name, font=font, fill="white")
+        draw.text((col_pos, row_pos + increment_size), name, font=font, fill="white")
         col_pos += 200
         if col_pos > image_width - increment_size:
             # add a new row
@@ -533,10 +622,16 @@ def image_generator(file_name, data):
     """C TIER"""
     if col_pos == 0:
         draw = ImageDraw.Draw(image)
-        draw.rectangle((col_pos, row_pos, col_pos + increment_size,
-                       row_pos + increment_size), fill="green")
-        draw.text((col_pos + (increment_size//3), row_pos +
-                  (increment_size//3)), "C Tier", font=tier_font, fill="black")
+        draw.rectangle(
+            (col_pos, row_pos, col_pos + increment_size, row_pos + increment_size),
+            fill="green",
+        )
+        draw.text(
+            (col_pos + (increment_size // 3), row_pos + (increment_size // 3)),
+            "C Tier",
+            font=tier_font,
+            fill="black",
+        )
         col_pos += increment_size
 
     for anime in data["c_tier"]:
@@ -550,8 +645,7 @@ def image_generator(file_name, data):
         if len(name) > text_cutoff_value:
             name = f"{name[:text_cutoff_value]}..."
 
-        draw.text((col_pos, row_pos + increment_size),
-                  name, font=font, fill="white")
+        draw.text((col_pos, row_pos + increment_size), name, font=font, fill="white")
 
         col_pos += 200
         if col_pos > image_width - increment_size:
@@ -564,10 +658,16 @@ def image_generator(file_name, data):
     """D TIER"""
     if col_pos == 0:
         draw = ImageDraw.Draw(image)
-        draw.rectangle((col_pos, row_pos, col_pos + increment_size,
-                       row_pos + increment_size), fill="blue")
-        draw.text((col_pos + (increment_size//3), row_pos +
-                  (increment_size//3)), "D Tier", font=tier_font, fill="black")
+        draw.rectangle(
+            (col_pos, row_pos, col_pos + increment_size, row_pos + increment_size),
+            fill="blue",
+        )
+        draw.text(
+            (col_pos + (increment_size // 3), row_pos + (increment_size // 3)),
+            "D Tier",
+            font=tier_font,
+            fill="black",
+        )
         col_pos += increment_size
 
     for anime in data["d_tier"]:
@@ -581,8 +681,7 @@ def image_generator(file_name, data):
         if len(name) > text_cutoff_value:
             name = f"{name[:text_cutoff_value]}..."
 
-        draw.text((col_pos, row_pos + increment_size),
-                  name, font=font, fill="white")
+        draw.text((col_pos, row_pos + increment_size), name, font=font, fill="white")
 
         col_pos += 200
         if col_pos > image_width - increment_size:
@@ -596,14 +695,19 @@ def image_generator(file_name, data):
     """E TIER"""
     if col_pos == 0:
         draw = ImageDraw.Draw(image)
-        draw.rectangle((col_pos, row_pos, col_pos + increment_size,
-                       row_pos + increment_size), fill="pink")
-        draw.text((col_pos + (increment_size//3), row_pos +
-                  (increment_size//3)), "E Tier", font=tier_font, fill="black")
+        draw.rectangle(
+            (col_pos, row_pos, col_pos + increment_size, row_pos + increment_size),
+            fill="pink",
+        )
+        draw.text(
+            (col_pos + (increment_size // 3), row_pos + (increment_size // 3)),
+            "E Tier",
+            font=tier_font,
+            fill="black",
+        )
         col_pos += increment_size
 
     for anime in data["e_tier"]:
-
         response = requests.get(anime["cover_art"])
         cover_art = Image.open(BytesIO(response.content))
         cover_art = cover_art.resize((increment_size, increment_size))
@@ -613,8 +717,7 @@ def image_generator(file_name, data):
         if len(name) > text_cutoff_value:
             name = f"{name[:text_cutoff_value]}..."
 
-        draw.text((col_pos, row_pos + increment_size),
-                  name, font=font, fill="white")
+        draw.text((col_pos, row_pos + increment_size), name, font=font, fill="white")
         col_pos += 200
         if col_pos > image_width - increment_size:
             row_pos += increment_size + 50
@@ -628,22 +731,7 @@ def image_generator(file_name, data):
     image.save(f"{file_name}")
 
 
-def see_tier_lists():
-    load_or_create_json()
-    with open("animes.json", "r") as f:
-        data = json.load(f)
-
-    if not data["tier_lists"]:
-        print("❌ [b red]No tier lists have been created yet![/b red]")
-        return
-
-    for key in data["tier_lists"]:
-        image_generator(f"{key['tier_list_name']}.png", key)
-        print(f"✅ [b green]CREATED[/b green] {key['tier_list_name']} tier list.")
-
-    print("✅ [b green]DONE[/b green]. Check the directory for the tier lists.")
-    return
-
+# OTHER FUNCTIONS
 def exit_app():
     clear()
     console = Console()
@@ -653,17 +741,25 @@ def exit_app():
     clear()
     exit()
 
+
 def clear():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system("cls" if os.name == "nt" else "clear")
+
 
 def main():
     figlet_text = Figlet().renderText("WELCOME TO  CLI  MyAnimeList")
     formatted_text = Text.from_markup(f"{figlet_text}\n\nMain Menu")
-    
+
     # Convert Text object to a string
     startup_question = formatted_text.plain
-    options = ["See MyAnimeList", "Give Me Anime Recommendation", "Search Anime Information",
-            "Make a Tier List", "See Created Tier Lists", "EXIT"]
+    options = [
+        "See MyAnimeList",
+        "Give Me Anime Recommendation",
+        "Search Anime Information",
+        "Make a Tier List",
+        "See Created Tier Lists",
+        "EXIT",
+    ]
     selected_option, index = pick(options, startup_question, indicator="→")
 
     if index == 0:
@@ -678,6 +774,7 @@ def main():
         see_tier_lists()
     elif index == 5:
         exit_app()
+
 
 if __name__ == "__main__":
     main()
