@@ -4,7 +4,7 @@
 CLI MyAnimeList is a program where you can create a list of anime that you want to watch just like in https://myanimelist.net/,
 and create a Tier List of anime from S tier to E tier in png image from your list. 
 ## Main Menu
-![Main Menu Interface](readme img/main_menu.png)
+![Main Menu Interface](https://github.com/krisnadharma1412/MyAnimeList-in-Python-CLI/blob/d297d3a064020b82410622ce2a517fae220f3f90/readme%20img/main_menu.png)
 In this Main Menu, you can see "WELCOME TO CLI MyAnimeList" that i created using pyfiglet.
 To install  pyfiglet library in Python, you can use the following command:
 ```sh
