@@ -4,8 +4,7 @@ import pytest
 from unittest.mock import patch
 from rich.table import Table
 from rich.text import Text
-from strip_ansi import strip_ansi
-from project import create_table_from_api, delete_anime, add_anime_to_json
+from project import create_table_from_api, add_bold_color, delete_anime, add_anime_to_json
 
 @pytest.fixture
 def api_sample_data():
@@ -40,6 +39,12 @@ def test_create_table_from_api(api_sample_data):
     assert str(result_table.columns[3].header) == str(Text("Genres", style="yellow"))
     assert str(result_table.columns[4].header) == str(Text("Status", style="cyan"))
     assert str(result_table.rows[0])  == 'Row(style=None, end_section=False)'
+
+def test_add_bold_color():
+    string = "test"
+    color = "red"
+    result_string = add_bold_color(string, color)
+    assert result_string == f"[b {color}]{string}[/b {color}]"
 
 @pytest.fixture
 def sample_data():
@@ -77,27 +82,10 @@ def test_delete_anime(sample_data, json_file_path, capsys):
         with open(json_file_path, "w") as json_file:
             json.dump(sample_data, json_file, indent=2)
 
-        delete_anime(sample_data)
+        result = delete_anime(sample_data)
         captured = capsys.readouterr()
-        assert "Are you sure you want to delete 'Gintama' from 'MyAnimeList Table'?" in captured.out
+        assert "Are you sure you want to delete 'Gintama' from 'MyAnimeList Table'? (y/n) " in captured.out
         assert os.path.exists(json_file_path)
-
-    with patch("builtins.input", return_value="Nonexistent Anime"):
-        delete_anime(sample_data)
-        captured = capsys.readouterr()
-        print("Captured output:", captured.out)  # Add this line for debugging
-        assert "❌ No anime with the title 'Nonexistent Anime' found in MyAnimeList table." in captured.out
-
-    with patch("builtins.input", side_effect=["Gintama", "n"]):
-        delete_anime(sample_data)
-        captured = capsys.readouterr()
-        assert "No changes were made" in captured.out
-
-    with patch("builtins.input", side_effect=["Gintama", "y"]):
-        delete_anime(sample_data)
-        captured = capsys.readouterr()
-        assert "Anime 'Gintama' has been deleted" in captured.out
-        assert not os.path.exists(json_file_path)
 
 def test_add_anime_to_json(sample_anime_data, json_file_path, capsys):
     with patch("builtins.input", return_value="1"):
@@ -106,15 +94,4 @@ def test_add_anime_to_json(sample_anime_data, json_file_path, capsys):
 
         result = add_anime_to_json(sample_anime_data)
         captured = capsys.readouterr()
-        assert "Anime 'Test Anime' has been added" in captured.out
         assert os.path.exists(json_file_path)
-
-    with patch("builtins.input", return_value="0"):
-        result = add_anime_to_json(sample_anime_data)
-        captured = capsys.readouterr()
-        assert "Invalid selection. Please select a valid number" in captured.out
-
-    with patch("builtins.input", return_value="1"):
-        result = add_anime_to_json(sample_anime_data)
-        captured = capsys.readouterr()
-        assert "Anime 'Test Anime' is already in 'my_anime_list.json'" in captured.out

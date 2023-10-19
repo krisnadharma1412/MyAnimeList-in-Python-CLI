@@ -16,14 +16,13 @@ from rich.table import Table
 from rich.console import Console
 from rich.text import Text
 
-
 # MENU 1
 def see_myanimelist():
     json_file_path = "my_anime_list.json"
 
     # Check if the file exist
     if not os.path.exists(json_file_path):
-        print("❌ [b red]No MyAnimeList found. Please add anime to your list first.[/b red]")
+        print(f"❌ {add_bold_color('No MyAnimeList found. Please add anime to your list first.', 'red')}")
         back_to_main_menu(3)
     # Load data from the JSON file
     with open(json_file_path) as json_file:
@@ -81,7 +80,8 @@ def see_myanimelist():
         elif selected_option == "3":
             back_to_main_menu()
         else:
-            print("❌ [b red]Invalid choice. Please enter a valid number.[/b red]")
+            print(f"❌ {add_bold_color('Invalid choice. Please enter a valid number.', 'red')}")
+            time.sleep(2)
             clear()
             see_myanimelist()
 
@@ -181,9 +181,9 @@ def recommend_anime():
                 elif answer2 == "n":
                     back_to_main_menu()
                 else:
-                    print("❌ [b red]Invalid choice. Please enter a valid number.[/b red]")
+                    print(f"❌ {add_bold_color('Invalid choice. Please enter a valid number', 'red')}")
         else:
-            print("❌ [b red]Invalid choice. Please enter a valid number.[/b red]")
+            print(f"❌ {add_bold_color('Invalid choice. Please enter a valid number', 'red')}")
 
 
 def add_anime_to_json(anime_data):
@@ -216,7 +216,7 @@ def add_anime_to_json(anime_data):
                 if any(
                     anime["title"] == new_anime["title"] for anime in existing_data
                 ):
-                    return f"❌ [b red]Anime '{new_anime['title']}' is already in 'my_anime_list.json'[/b red]"
+                    return f"❌ [b red]'Anime '{new_anime['title']}' is already in 'my_anime_list.json'[/b red]"
                     
                 else:
                     # Append existing data with new selected anime
@@ -237,9 +237,9 @@ def add_anime_to_json(anime_data):
         elif selected_no == 0:
             back_to_main_menu()
         else:
-            return f"❌ [b red]Invalid input. Please select between {1} and {len(anime_data['data'])}.[/b red]"
+            return f"❌ [b red]'Invalid input. Please select between 1 and {len(anime_data['data'])}[/b red]."
     except ValueError:
-        return "❌ [b red]Invalid input. Please enter a number.[/b red]"
+        return f"❌ {add_bold_color('Invalid input. Please enter a number', 'red')}"
 
 # MENU 3
 def search_anime():
@@ -273,9 +273,9 @@ def search_anime():
                 elif answer2 == "n":
                     back_to_main_menu()
                 else:
-                    print("❌ [b red]Invalid choice. Please enter a valid number.[/b red]")
+                    print(f"❌ {add_bold_color('Invalid choice. Please enter a valid number.', 'red')}")
         else:
-            print("❌ [b red]Invalid choice. Please enter a valid number.[/b red]")
+            print(f"❌ {add_bold_color('Invalid choice. Please enter a valid number', 'red')}")
 
 def back_to_main_menu(seconds=2):
     print("[b yellow]back to main menu...[/b yellow]")
@@ -308,7 +308,7 @@ def delete_anime(data):
             elif confirm.lower() == "n":
                 return "No changes were made."
     if not found:
-        return f"❌ [b red]No anime with the title '{title}' found in MyAnimeList table. Please try again.[/b red]"
+        return f"❌ [b red]'No anime with the title '{title}' found in MyAnimeList table. Please try again.[/b red]"
 
 
 def load_or_create_json() -> None:
@@ -320,7 +320,6 @@ def load_or_create_json() -> None:
         with open("animes.json", "w") as file:
             ratings = {"anime_ratings": [], "tier_lists": []}
             json.dump(ratings, file)
-
 
 def create_tier_list_helper(animes_to_rank, tier_name):
     # if there are no more animes to rank, return an empty list
@@ -357,7 +356,7 @@ def create_tier_list():
     clear()
     # Check if the myanimelist file exist
     if not os.path.exists("my_anime_list.json"):
-        print("❌ [b red]No MyAnimeList found. Please add anime to your list first.[/b red]")
+        print(f"❌ {add_bold_color('No MyAnimeList found. Please add anime to your list first.', 'red')}")
         back_to_main_menu(3)
 
     console = Console()
@@ -478,7 +477,7 @@ def see_tier_lists():
         data = json.load(f)
 
     if not data["tier_lists"]:
-        print("❌ [b red]No tier lists have been created yet![/b red]")
+        print(f"❌ {add_bold_color('No tier lists have been created yet!)', 'red')}")
         back_to_main_menu(3) 
 
     for key in data["tier_lists"]:
@@ -742,6 +741,8 @@ def image_generator(file_name, data):
 
 
 # OTHER FUNCTIONS
+def add_bold_color(string, color):
+    return f"[b {color}]{string}[/b {color}]"
 def exit_app():
     clear()
     console = Console()
