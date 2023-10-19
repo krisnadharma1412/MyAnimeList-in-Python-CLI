@@ -16,11 +16,11 @@ To install the pick library in Python, you can use the following command:
 pip install pick
 ```
 ## 'See MyAnimeList' and 'Give Me Anime Recommendation' Menu
-![Display Genre Example](URL)
-![Anime Recommendation Table](URL)
-![Invalid Choice](URL)
-![Anime Saved Successfully to Json File](URL)
-![my_anime_list.json structure](URL)
-![Search Another Genre](URL)
-![Search Another Genre](URL)
+![Display Genre Example](https://github.com/krisnadharma1412/MyAnimeList-in-Python-CLI/blob/main/readme%20img/recommend1.png)
+![Anime Recommendation Table](https://github.com/krisnadharma1412/MyAnimeList-in-Python-CLI/blob/main/readme%20img/recommend2.png)
+![Invalid Choice](https://github.com/krisnadharma1412/MyAnimeList-in-Python-CLI/blob/main/readme%20img/recommend3.png)
+![Anime Saved Successfully to Json File](https://github.com/krisnadharma1412/MyAnimeList-in-Python-CLI/blob/main/readme%20img/recommend4.png)
+![my_anime_list.json structure](https://github.com/krisnadharma1412/MyAnimeList-in-Python-CLI/blob/main/readme%20img/myanimelistjson.png)
+![Search Another Genre](https://github.com/krisnadharma1412/MyAnimeList-in-Python-CLI/blob/main/readme%20img/recommend1.png)
+![Back to Main Menu](https://github.com/krisnadharma1412/MyAnimeList-in-Python-CLI/blob/main/readme%20img/recommend5.png)
 This program use an API named Jikan. 
