@@ -1,97 +1,24 @@
 [
   {
-    "title": "Gintama",
-    "score": 8.94,
+    "title": "Kaguya-sama wa Kokurasetai: Ultra Romantic",
+    "score": 9.03,
     "genres": [
-      "Action",
       "Comedy",
-      "Sci-Fi"
+      "Romance"
     ],
     "status": "Finished Airing",
-    "image_url": "https://cdn.myanimelist.net/images/anime/10/73274.jpg"
+    "image_url": "https://cdn.myanimelist.net/images/anime/1160/122627.jpg"
   },
   {
-    "title": "Made in Abyss",
-    "score": 8.66,
+    "title": "Mushoku Tensei: Isekai Ittara Honki Dasu",
+    "score": 8.37,
     "genres": [
       "Adventure",
       "Drama",
       "Fantasy",
-      "Mystery",
-      "Sci-Fi"
+      "Ecchi"
     ],
     "status": "Finished Airing",
-    "image_url": "https://cdn.myanimelist.net/images/anime/6/86733.jpg"
-  },
-  {
-    "title": "Sousou no Frieren",
-    "score": 8.94,
-    "genres": [
-      "Adventure",
-      "Drama",
-      "Fantasy"
-    ],
-    "status": "Currently Airing",
-    "image_url": "https://cdn.myanimelist.net/images/anime/1015/138006.jpg"
-  },
-  {
-    "title": "A Brightening Life",
-    "score": 5.51,
-    "genres": [
-      "Drama"
-    ],
-    "status": "Finished Airing",
-    "image_url": "https://cdn.myanimelist.net/images/anime/1565/103711.jpg"
-  },
-  {
-    "title": "Shingeki no Kyojin: The Final Season",
-    "score": 8.79,
-    "genres": [
-      "Action",
-      "Drama",
-      "Suspense"
-    ],
-    "status": "Finished Airing",
-    "image_url": "https://cdn.myanimelist.net/images/anime/1000/110531.jpg"
-  },
-  {
-    "title": "Jujutsu Kaisen 2nd Season",
-    "score": 8.83,
-    "genres": [
-      "Action",
-      "Fantasy"
-    ],
-    "status": "Currently Airing",
-    "image_url": "https://cdn.myanimelist.net/images/anime/1792/138022.jpg"
-  },
-  {
-    "title": "Kimetsu no Yaiba: Yuukaku-hen",
-    "score": 8.78,
-    "genres": [
-      "Action",
-      "Fantasy"
-    ],
-    "status": "Finished Airing",
-    "image_url": "https://cdn.myanimelist.net/images/anime/1908/120036.jpg"
-  },
-  {
-    "title": "Mob Psycho 100: Reigen - Shirarezaru Kiseki no Reinouryokusha",
-    "score": 7.37,
-    "genres": [
-      "Action",
-      "Comedy",
-      "Supernatural"
-    ],
-    "status": "Finished Airing",
-    "image_url": "https://cdn.myanimelist.net/images/anime/7/89331.jpg"
-  },
-  {
-    "title": "Test Anime",
-    "score": 9.0,
-    "genres": [
-      "Romance"
-    ],
-    "status": "Currently Airing",
-    "image_url": "https://example.com/image.jpg"
+    "image_url": "https://cdn.myanimelist.net/images/anime/1530/117776.jpg"
   }
 ]
