@@ -85,7 +85,6 @@ def see_myanimelist():
             clear()
             see_myanimelist()
 
-
 def create_table_from_api(data, title="MyAnimeList"):
     # Create a Rich Table instance
     table = Table(title=Text(title, style="bold"))
@@ -99,16 +98,15 @@ def create_table_from_api(data, title="MyAnimeList"):
     # Extracting Data
     for i in range(len(data["data"])):
         anime_info = data["data"][i]
-        title = anime_info["title"]
+        anime_title = anime_info["title"]
         score = anime_info["score"]
         genres = [genre["name"] for genre in anime_info["genres"]]
         genres = ", ".join(genres)
         status = anime_info["status"]
 
         # Add a row to the table
-        table.add_row(str(i + 1), title, str(score), genres, status)
+        table.add_row(str(i + 1), anime_title, str(score), genres, status)
     return table
-
 
 # MENU 2
 def recommend_anime():
@@ -164,7 +162,16 @@ def recommend_anime():
     while True:
         answer1 = input(f"Do you want to add an Anime To Your List (y/n): ")
         if answer1 == "y":
-            add_anime_to_json(anime_data)
+            error_check = add_anime_to_json(anime_data)
+            if error_check[0] == "❌":
+                while error_check[0] == "❌":
+                    error_check = add_anime_to_json(anime_data)
+                    print(error_check)
+                    if error_check[0] == "✅":
+                        break
+            else:
+                print(error_check)
+                time.sleep(2)
         elif answer1 == "n":
             while True:
                 answer2 = input(f"Do you want to search other Genre (y/n): ")
@@ -180,62 +187,59 @@ def recommend_anime():
 
 
 def add_anime_to_json(anime_data):
-    while True:
-        try:
-            # Ask the user to choose a number from the displayed results
-            selected_no = int(
-                input(
-                    "Enter the number of the anime you want to save to your MyAnimeList (0 to cancel or exit): "
-                )
+    try:
+        # Ask the user to choose a number from the displayed results
+        selected_no = int(
+            input(
+                "Enter the number of the anime you want to save to your MyAnimeList (0 to cancel or exit to main menu): "
             )
-            if 1 <= selected_no <= len(anime_data["data"]):
-                # User selected a valid anime
-                selected_anime = anime_data["data"][selected_no - 1]
-                # Make a list of dictionary to store the selected anime
-                new_anime = {
-                    "title": selected_anime["title"],
-                    "score": selected_anime["score"],
-                    "genres": [genre["name"] for genre in selected_anime["genres"]],
-                    "status": selected_anime["status"],
-                    "image_url": selected_anime["images"]["jpg"]["image_url"],
-                }
-                # Json File Name
-                json_file_path = "my_anime_list.json"
-                if os.path.exists(json_file_path):
-                    # File already exists, load existing data
-                    with open(json_file_path, "r") as json_file:
-                        existing_data = json.load(json_file)
+        )
+        if 1 <= selected_no <= len(anime_data["data"]):
+            # User selected a valid anime
+            selected_anime = anime_data["data"][selected_no - 1]
+            # Make a list of dictionary to store the selected anime
+            new_anime = {
+                "title": selected_anime["title"],
+                "score": selected_anime["score"],
+                "genres": [genre["name"] for genre in selected_anime["genres"]],
+                "status": selected_anime["status"],
+                "image_url": selected_anime["images"]["jpg"]["image_url"],
+            }
+            # Json File Name
+            json_file_path = "my_anime_list.json"
+            if os.path.exists(json_file_path):
+                # File already exists, load existing data
+                with open(json_file_path, "r") as json_file:
+                    existing_data = json.load(json_file)
 
-                    # Check if an anime with the same title already exists
-                    if any(
-                        anime["title"] == new_anime["title"] for anime in existing_data
-                    ):
-                        print(
-                            f"❌ [b red]Anime '{new_anime['title']}' is already in 'my_anime_list.json'[/b red]"
-                        )
-                    else:
-                        # Append existing data with new selected anime
-                        existing_data.append(new_anime)
-                        # Write the updated data back to the file
-                        with open(json_file_path, "w") as json_file:
-                            json.dump(existing_data, json_file, indent=2)
-
-                        print(
-                            f"✅ Anime '{new_anime['title']}' has been added in 'my_anime_list.json'"
-                        )
+                # Check if an anime with the same title already exists
+                if any(
+                    anime["title"] == new_anime["title"] for anime in existing_data
+                ):
+                    return f"❌ [b red]Anime '{new_anime['title']}' is already in 'my_anime_list.json'[/b red]"
+                    
                 else:
-                    # File does not exist, create a new file with selected anime data
-                    existing_data = [new_anime]
-                    # Write the new data to the file
+                    # Append existing data with new selected anime
+                    existing_data.append(new_anime)
+                    # Write the updated data back to the file
                     with open(json_file_path, "w") as json_file:
                         json.dump(existing_data, json_file, indent=2)
 
-                    print(f"✅ Anime '{new_anime['title']}' saved to 'my_anime_list.json'")
+                    return f"✅ Anime '{new_anime['title']}' has been added in 'my_anime_list.json'"
             else:
-                back_to_main_menu()
-        except ValueError:
-            print("❌ [b red]Invalid input. Please enter a number.[/b red]")
+                # File does not exist, create a new file with selected anime data
+                existing_data = [new_anime]
+                # Write the new data to the file
+                with open(json_file_path, "w") as json_file:
+                    json.dump(existing_data, json_file, indent=2)
 
+                return f"✅ Anime '{new_anime['title']}' saved to 'my_anime_list.json'"
+        elif selected_no == 0:
+            back_to_main_menu()
+        else:
+            return f"❌ [b red]Invalid input. Please select between {1} and {len(anime_data['data'])}.[/b red]"
+    except ValueError:
+        return "❌ [b red]Invalid input. Please enter a number.[/b red]"
 
 # MENU 3
 def search_anime():
@@ -249,7 +253,17 @@ def search_anime():
     while True:
         answer1 = input(f"Do you want to add an Anime To Your List (y/n): ")
         if answer1 == "y":
-            add_anime_to_json(anime_data)
+            error_check = add_anime_to_json(anime_data)
+            print(error_check)
+            if error_check[0] == "❌":
+                while error_check[0] == "❌":
+                    error_check = add_anime_to_json(anime_data)
+                    print(error_check)
+                    if error_check[0] == "✅":
+                        break
+            else:
+                print(error_check)
+                time.sleep(2)
         elif answer1 == "n":
             while True:
                 answer2 = input(f"Do you want to search other Anime (y/n): ")
@@ -263,7 +277,6 @@ def search_anime():
         else:
             print("❌ [b red]Invalid choice. Please enter a valid number.[/b red]")
 
-
 def back_to_main_menu(seconds=2):
     print("[b yellow]back to main menu...[/b yellow]")
     # Add a delay of 2 seconds
@@ -275,30 +288,27 @@ def back_to_main_menu(seconds=2):
 
 
 def delete_anime(data):
-    while True:
-        title = input("Enter the title of the Anime: ").strip()
-        found = False
-        for i in range(len(data)):
-            if data[i]["title"] == title:
-                found = True
-                # ask for confirmation to confirm delete
-                console = Console()
-                console.print(
-                    f"Are you sure you want to delete [cyan]'{title}'[/cyan] from [blue]'MyAnimeList Table'?[/blue] (y/n)", end=" "
-                )
-                confirm = input().strip()
-                if confirm.lower() == "y":
-                    del data[i]
-                    with open("my_anime_list.json", "w") as json_file:
-                        json.dump(data, json_file, indent=2)
-                    clear()
-                    return f"✅ Anime '{title}' has been deleted from 'my_anime_list.json'"
-                elif confirm.lower() == "n":
-                    return "No changes were made."
-        if not found:
-            print(
-                f"❌ [b red]No anime with the title '{title}' found in MyAnimeList table. Please try again.[/b red]"
+    title = input("Enter the title of the Anime: ").strip()
+    found = False
+    for i in range(len(data)):
+        if data[i]["title"] == title:
+            found = True
+            # ask for confirmation to confirm delete
+            console = Console()
+            console.print(
+                f"Are you sure you want to delete [cyan]'{title}'[/cyan] from [blue]'MyAnimeList Table'?[/blue] (y/n)", end=" "
             )
+            confirm = input().strip()
+            if confirm.lower() == "y":
+                del data[i]
+                with open("my_anime_list.json", "w") as json_file:
+                    json.dump(data, json_file, indent=2)
+                clear()
+                return f"✅ Anime '{title}' has been deleted from 'my_anime_list.json'"
+            elif confirm.lower() == "n":
+                return "No changes were made."
+    if not found:
+        return f"❌ [b red]No anime with the title '{title}' found in MyAnimeList table. Please try again.[/b red]"
 
 
 def load_or_create_json() -> None:

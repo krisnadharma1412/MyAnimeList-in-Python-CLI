@@ -1,1 +1,25 @@
-{"anime_ratings": [], "tier_lists": []}
+{
+    "anime_ratings": [],
+    "tier_lists": [
+        {
+            "tier_list_name": "Action",
+            "s_tier": [
+                {
+                    "anime": "Gintama",
+                    "cover_art": "https://cdn.myanimelist.net/images/anime/10/73274.jpg"
+                }
+            ],
+            "a_tier": [
+                {
+                    "anime": "Made in Abyss",
+                    "cover_art": "https://cdn.myanimelist.net/images/anime/6/86733.jpg"
+                }
+            ],
+            "b_tier": [],
+            "c_tier": [],
+            "d_tier": [],
+            "e_tier": [],
+            "time": "2023-10-19 09:32:41.544837"
+        }
+    ]
+}
