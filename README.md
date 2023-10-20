@@ -1,5 +1,5 @@
 # CLI MyAnimeList
-#### Video Demo:  <URL HERE>
+#### Video Demo:  <https://www.youtube.com/watch?v=qh1hoa44AKo>
 #### Description:
 CLI MyAnimeList is a program where you can create a list of anime that you want to watch just like in https://myanimelist.net/,
 and create a Tier List of anime from S tier to E tier in PNG image from your list. To collect the anime data I use an API named Jikan which is an Unofficial MyAnimeList REST API. You can see the repository at https://github.com/jikan-me/jikan.

@@ -2,31 +2,11 @@
     "anime_ratings": [],
     "tier_lists": [
         {
-            "tier_list_name": "Action",
+            "tier_list_name": "Adventure Anime Tier List",
             "s_tier": [
                 {
-                    "anime": "Gintama",
-                    "cover_art": "https://cdn.myanimelist.net/images/anime/10/73274.jpg"
-                }
-            ],
-            "a_tier": [
-                {
-                    "anime": "Made in Abyss",
-                    "cover_art": "https://cdn.myanimelist.net/images/anime/6/86733.jpg"
-                }
-            ],
-            "b_tier": [],
-            "c_tier": [],
-            "d_tier": [],
-            "e_tier": [],
-            "time": "2023-10-19 09:32:41.544837"
-        },
-        {
-            "tier_list_name": "Adventure Tier List",
-            "s_tier": [
-                {
-                    "anime": "Hunter x Hunter (2011)",
-                    "cover_art": "https://cdn.myanimelist.net/images/anime/1337/99013.jpg"
+                    "anime": "Vinland Saga",
+                    "cover_art": "https://cdn.myanimelist.net/images/anime/1500/103005.jpg"
                 },
                 {
                     "anime": "Hunter x Hunter",
@@ -37,8 +17,8 @@
                     "cover_art": "https://cdn.myanimelist.net/images/anime/6/86733.jpg"
                 },
                 {
-                    "anime": "Vinland Saga",
-                    "cover_art": "https://cdn.myanimelist.net/images/anime/1500/103005.jpg"
+                    "anime": "Hunter x Hunter (2011)",
+                    "cover_art": "https://cdn.myanimelist.net/images/anime/1337/99013.jpg"
                 },
                 {
                     "anime": "Dungeon ni Deai wo Motomeru no wa Machigatteiru Darou ka IV: Fuka Shou - Yakusai-hen",
@@ -57,45 +37,45 @@
                 {
                     "anime": "Fullmetal Alchemist: Brotherhood",
                     "cover_art": "https://cdn.myanimelist.net/images/anime/1208/94745.jpg"
-                }
-            ],
-            "b_tier": [
-                {
-                    "anime": "Princess Connect! Re:Dive",
-                    "cover_art": "https://cdn.myanimelist.net/images/anime/1810/106070.jpg"
                 },
                 {
                     "anime": "Majo no Tabitabi",
                     "cover_art": "https://cdn.myanimelist.net/images/anime/1802/108501.jpg"
                 }
             ],
-            "c_tier": [
+            "b_tier": [
                 {
                     "anime": "Tate no Yuusha no Nariagari Season 2",
                     "cover_art": "https://cdn.myanimelist.net/images/anime/1143/121873.jpg"
+                },
+                {
+                    "anime": "Princess Connect! Re:Dive",
+                    "cover_art": "https://cdn.myanimelist.net/images/anime/1810/106070.jpg"
+                }
+            ],
+            "c_tier": [
+                {
+                    "anime": "Yakusoku no Neverland 2nd Season",
+                    "cover_art": "https://cdn.myanimelist.net/images/anime/1815/110626.jpg"
+                },
+                {
+                    "anime": "Death March kara Hajimaru Isekai Kyousoukyoku",
+                    "cover_art": "https://cdn.myanimelist.net/images/anime/4/88911.jpg"
                 }
             ],
             "d_tier": [
                 {
-                    "anime": "Yakusoku no Neverland 2nd Season",
-                    "cover_art": "https://cdn.myanimelist.net/images/anime/1815/110626.jpg"
+                    "anime": "Isekai Cheat Magician",
+                    "cover_art": "https://cdn.myanimelist.net/images/anime/1282/102248.jpg"
                 }
             ],
             "e_tier": [
                 {
                     "anime": "Boruto: Naruto Next Generations",
                     "cover_art": "https://cdn.myanimelist.net/images/anime/1091/99847.jpg"
-                },
-                {
-                    "anime": "Death March kara Hajimaru Isekai Kyousoukyoku",
-                    "cover_art": "https://cdn.myanimelist.net/images/anime/4/88911.jpg"
-                },
-                {
-                    "anime": "Isekai Cheat Magician",
-                    "cover_art": "https://cdn.myanimelist.net/images/anime/1282/102248.jpg"
                 }
             ],
-            "time": "2023-10-20 10:51:17.914902"
+            "time": "2023-10-20 14:57:39.135400"
         }
     ]
 }
