@@ -213,11 +213,8 @@ def add_anime_to_json(anime_data):
                     existing_data = json.load(json_file)
 
                 # Check if an anime with the same title already exists
-                if any(
-                    anime["title"] == new_anime["title"] for anime in existing_data
-                ):
+                if any(anime["title"] == new_anime["title"] for anime in existing_data):
                     return f"❌ [b red]'Anime '{new_anime['title']}' is already in 'my_anime_list.json'[/b red]"
-                    
                 else:
                     # Append existing data with new selected anime
                     existing_data.append(new_anime)
@@ -253,8 +250,7 @@ def search_anime():
     while True:
         answer1 = input(f"Do you want to add an Anime To Your List (y/n): ")
         if answer1 == "y":
-            error_check = add_anime_to_json(anime_data)
-            print(error_check)
+            error_check = "❌"
             if error_check[0] == "❌":
                 while error_check[0] == "❌":
                     error_check = add_anime_to_json(anime_data)
@@ -288,7 +284,7 @@ def back_to_main_menu(seconds=2):
 
 
 def delete_anime(data):
-    title = input("Enter the title of the Anime: ").strip()
+    title = input("Enter the title of the Anime you want to Delete: ").strip()
     found = False
     for i in range(len(data)):
         if data[i]["title"] == title:
