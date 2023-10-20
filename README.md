@@ -20,7 +20,7 @@ When you select the first menu 'See MyAnimeList' and you haven't made a list yet
 there will be a message and force you to back to main menu to add a list first: 
 ![Empty Table](https://github.com/krisnadharma1412/MyAnimeList-in-Python-CLI/blob/main/readme%20img/no_list.png)
 
-## Give Me A Anime Recommendation Menu
+## Give Me Anime Recommendation Menu
 If you doesn't have an idea what anime you want to add to your list, you can pick the second menu 'Give Me Anime Recommendation'. 
 In this menu you can ask the program to recommend an anime based on the genre you want.
 If you don't  know what kind of genres that are available, you can see the given example of the genres or you can see the full
